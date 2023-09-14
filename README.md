@@ -1,4 +1,7 @@
-# The project: Opla_Robot
+
+# The project: ROBOTO V1
+![Roboto v1](https://github.com/Fedilas/Opla_Robot/blob/main/ROBOTO.jpg)
+
 Arduino C++ Program for Animating a Social Robot with Opla Kit and Arduino MKR 1010
 
 ## The MKR WiFi 1010 Board
