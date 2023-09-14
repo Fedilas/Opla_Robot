@@ -1,0 +1,5 @@
+{
+    "board": "arduino:samd:mkrwifi1010",
+    "sketch": "opla_robot.ino",
+    "port": "/dev/tty.usbmodem143101"
+}

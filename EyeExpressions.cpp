@@ -1,19 +1,6 @@
-#include <Arduino_MKRIoTCarrier.h>
+#include "EyeExpressions.h"
 
-MKRIoTCarrier carrier;
-bool gestureDetected = false;
-unsigned long lastGestureTime = 0;
-unsigned long lastActionTime = 0;
-
-void setup() {
-  CARRIER_CASE = true;
-  carrier.begin();
-  carrier.display.fillScreen(ST77XX_WHITE);
-  drawNormalEyes();
-
-  // Initialize last action time
-  lastActionTime = millis();
-}
+extern MKRIoTCarrier carrier;
 
 void drawHeartEyes() {
   carrier.display.fillScreen(ST77XX_WHITE);
@@ -29,18 +16,7 @@ void drawHeartEyes() {
   carrier.display.fillTriangle(150, 165, 185, 120, 220, 165, ST77XX_RED);
 }
 
-void drawArc(int16_t x, int16_t y, int16_t r, int16_t startAngle, int16_t endAngle, uint16_t color) {
-  for (int i = startAngle; i < endAngle; i++) {
-    int16_t newX = x + r * cos(i * (PI / 180.0));
-    int16_t newY = y + r * sin(i * (PI / 180.0));
-    carrier.display.drawPixel(newX, newY, color);
-  }
-}
 
-void drawHappyMouth() {
-  // Parameters: x, y, radius, start angle, end angle, color
-  drawArc(80, 50, 50, 0, 100, ST77XX_RED);
-}
 
 
 void drawNormalEyes() {
@@ -98,63 +74,4 @@ void drawSleepyEyes() {
   carrier.display.fillScreen(ST77XX_WHITE);
   carrier.display.fillCircle(180, 130, 50, ST77XX_BLACK);  // Raised a bit to make eyes sleepy
   carrier.display.fillCircle(70, 130, 50, ST77XX_BLACK);
-}
-
-void loop() {
-  // Update the carrier status
-  carrier.Buttons.update();
-  
-
-  // Check if the Button 1 is being touched to show sad eyes
-  if (carrier.Buttons.getTouch(TOUCH1)) {
-    drawSadEyes();
-    drawHappyMouth();
-    lastActionTime = millis();  // Reset the last action time
-    
-  }
-
-  // Check if button 0 is being touched
-  if (carrier.Buttons.getTouch(TOUCH0)) {
-    drawHeartEyes();
-    delay(3000);                // Hold the heart eyes for 3 seconds
-    drawNormalEyes();           // then revert back to normal eyes
-    lastActionTime = millis();  // Reset the last action time
-  }
-
-  if (carrier.Light.gestureAvailable()) {
-    uint8_t gesture = carrier.Light.readGesture();
-
-    if (gesture == UP && !gestureDetected) {
-      drawHalfMoonEyes();
-      gestureDetected = true;
-      lastGestureTime = millis();
-      delay(1000);
-    }
-  }
-
-  if (gestureDetected && (millis() - lastGestureTime > 5000)) {
-    gestureDetected = false;
-    drawNormalEyes();
-  }
-
-  // Randomly blink eyes twice at intervals between 5 to 15 seconds
-  if (random(5000, 15000) < (millis() - lastActionTime)) {
-    blinkEyes();
-    lastActionTime = millis();
-  }
-
-  // If there's no action for more than 20 seconds, make eyes appear sleepy
-  if (millis() - lastActionTime > 20000) {
-    drawSleepyEyes();
-    delay(3000);  // Hold the sleepy eyes for 3 seconds
-    drawNormalEyes();
-    lastActionTime = millis();
-  }
-
-  // Occasional lifelike movement of pupils
-  if (random(0, 100) > 95) {  // 5% chance every loop iteration
-    drawNormalEyes();
-    delay(300);  // Hold the position for a bit before next loop iteration
-  }
-  delay(50);
 }
